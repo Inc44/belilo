@@ -1,25 +1,32 @@
-use std::env;
+use belilo::process_images;
+use clap::Parser;
 use std::path::PathBuf;
 use std::process;
-use belilo::{process_directory, AppError};
-
-fn parse_args() -> Result<(PathBuf, bool), AppError> {
-    let args: Vec<String> = env::args().collect();
-    if args.len() < 2 || args.len() > 3 {
-        return Err(AppError {
-            message: format!("Usage: {} <input-path> [--override]", args[0]),
-        });
-    }
-    let override_flag = args.len() == 3 && args[2] == "--override";
-    Ok((PathBuf::from(&args[1]), override_flag))
+#[derive(Parser)]
+#[command(
+    version,
+    about = "A command-line tool for whitening images.",
+    long_about = "Belilo, which translates to 'whitewasher' in Russian, is a useful tool created with ❤️ using Rust. It quickly whitens images, providing a clean, uniform appearance. It's fast, efficient, and precise.",
+    override_usage = "belilo <input_paths>... [options]"
+)]
+struct Cli {
+    /// Paths to the input images or directories (required)
+    #[arg(value_name = "input_paths", required = true)]
+    input_paths: Vec<PathBuf>,
+    /// Override the input image instead of creating a new one
+    #[arg(short, long = "override")]
+    override_flag: bool,
 }
-
 fn main() {
-    match parse_args().and_then(|(path, override_flag)| process_directory(&path, override_flag)) {
-        Ok(_) => {}
-        Err(e) => {
-            eprintln!("{}", e);
-            process::exit(1);
+    let cli = Cli::parse();
+    let mut has_errors = false;
+    for path in &cli.input_paths {
+        if let Err(error) = process_images(path, cli.override_flag) {
+            eprintln!("{}", error);
+            has_errors = true;
         }
+    }
+    if has_errors {
+        process::exit(1);
     }
 }
