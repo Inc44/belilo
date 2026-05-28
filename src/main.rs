@@ -16,13 +16,24 @@ struct Cli {
     /// Override the input image instead of creating a new one
     #[arg(short, long = "override")]
     override_flag: bool,
+    /// Keep modification time
+    #[arg(short, long = "keep")]
+    keep_flag: bool,
+    /// Threshold for whitening (0-255) (default: 220)
+    #[arg(
+        short,
+        long,
+        value_name = "value",
+        default_value_t = 220,
+        hide_default_value = true
+    )]
+    threshold: u8,
 }
 fn main() {
     let cli = Cli::parse();
     let mut has_errors = false;
     for path in &cli.input_paths {
-        if let Err(error) = process_images(path, cli.override_flag) {
-            eprintln!("{}", error);
+        if process_images(path, cli.override_flag, cli.keep_flag, cli.threshold).is_err() {
             has_errors = true;
         }
     }

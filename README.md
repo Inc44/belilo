@@ -21,6 +21,10 @@ Belilo, which translates to 'whitewasher' in Russian, is a useful tool created w
 - 📁 Organized output to keep trimmed images together.
 - 🛠️ Easy-to-use command-line interface.
 
+## ⚠️ Disclaimers
+
+Input images with zero width or height (0x0) are skipped entirely, as according to image standards supported by this tool, they are not valid images by definition.
+
 ## 🚀 Installation from crates.io
 
 ```bash
@@ -55,10 +59,12 @@ belilo <input_paths>... [options]
 
 ## 🎨 Command-Line Arguments
 
-| Argument        | Description                                            |
-|-----------------|--------------------------------------------------------|
-| `<input_paths>` | Paths to the input images or directories (required)    |
-| `--override`    | Override the input image instead of creating a new one |
+| Argument                  | Description                                            |
+|---------------------------|--------------------------------------------------------|
+| `<input_paths>`           | Paths to the input images or directories (required)    |
+| `-o, --override`          | Override the input image instead of creating a new one |
+| `-k, --keep`              | Keep modification time                                 |
+| `-t, --threshold <value>` | Threshold for whitening (0-255) (default: 220)         |
 
 ## 🐛 Bugs
 
@@ -74,6 +80,7 @@ Creators of:
 
 - [Rust](https://www.rust-lang.org)
 - [clap](https://github.com/clap-rs/clap)
+- [filetime](https://github.com/alexcrichton/filetime)
 - [Image](https://github.com/image-rs/image)
 - [Rayon](https://github.com/rayon-rs/rayon)
 - [walkdir](https://github.com/BurntSushi/walkdir)
